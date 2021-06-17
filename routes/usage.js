@@ -8,11 +8,29 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 require("dotenv").config();
+const fs = require('fs');
+var path = require('path');
+
 const MobileNumber = process.env.MobileNumber;
 const Password = process.env.Password;
 
-/* GET users listing. */
-router.get("/", async (req, res) => {
+setInterval(async () => {
+  const date = new Date();
+  const key = parseInt(date.getTime() / (1 * 60 * 1000))
+
+  const fileName = path.join(__dirname, '../', 'public', 'data.json');
+  const file = require(fileName);
+
+  const usage = await getUsage();
+  file[key] = usage.usedAmount;
+
+  fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
+    if (err) return console.log(err);
+    console.log(JSON.stringify(file));
+  });
+}, 1 * 60 * 1000)
+
+const getUsage = async () => {
   if (!MobileNumber || !Password) {
     res.json({ error: "missing MobileNumber and Password" });
     return;
@@ -54,7 +72,12 @@ router.get("/", async (req, res) => {
 
   await browser.close();
 
-  const usage = responseJson?.body?.detailedLineUsageList[0];
+  return responseJson?.body?.detailedLineUsageList[0];
+}
+
+/* GET users listing. */
+router.get("/", async (req, res) => {
+  const usage = await getUsage();
 
   res.json(usage);
 });
