@@ -78,6 +78,8 @@ const getUsage = async () => {
   } catch (e) {
     console.log(e);
   } finally {
+    const pages = await browser.pages();
+    await Promise.all(pages.map((page) => page.close()));
     await browser.close();
   }
   return response;
