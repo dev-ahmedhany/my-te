@@ -39,13 +39,12 @@ const getUsage = async () => {
     return;
   }
   let response = "0";
+  puppeteer.use(StealthPlugin());
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
-
-    puppeteer.use(StealthPlugin());
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-    let page = (await browser.pages())[0];
+    const page = (await browser.pages())[0];
     await page.goto("https://my.te.eg/");
 
     await page.waitForSelector("#MobileNumberID");
