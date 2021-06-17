@@ -16,18 +16,21 @@ const Password = process.env.Password;
 
 setInterval(async () => {
   const date = new Date();
-  const key = parseInt(date.getTime() / (1 * 60 * 1000))
 
   const fileName = path.join(__dirname, '../', 'public', 'data.json');
   const file = require(fileName);
 
-  const usage = await getUsage();
-  file[key] = usage.usedAmount;
+  const k = Object.keys(obj).reduce((a, b) => a > b ? a : b);
 
-  fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
-    if (err) return console.log(err);
-    console.log(JSON.stringify(file));
-  });
+  const usage = await getUsage();
+  if (usage.usedAmount !== file[k]) {
+    const key = parseInt(date.getTime() / (1 * 60 * 1000))
+    file[key] = usage.usedAmount;
+    fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
+      if (err) return console.log(err);
+      console.log(JSON.stringify(file));
+    });
+  }
 }, 1 * 60 * 1000)
 
 const getUsage = async () => {
