@@ -14,11 +14,11 @@ var path = require('path');
 const MobileNumber = process.env.MobileNumber;
 const Password = process.env.Password;
 
+const fileName = path.join(__dirname, '../', 'public', 'data.json');
 setInterval(async () => {
   const date = new Date();
 
-  const fileName = path.join(__dirname, '../', 'public', 'data.json');
-  const file = require(fileName);
+  let file = JSON.parse(fs.readFileSync(fileName, 'utf8'));
 
   const k = Object.keys(file).reduce((a, b) => a > b ? a : b);
 
