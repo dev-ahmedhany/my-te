@@ -20,7 +20,7 @@ setInterval(async () => {
   const fileName = path.join(__dirname, '../', 'public', 'data.json');
   const file = require(fileName);
 
-  const k = Object.keys(obj).reduce((a, b) => a > b ? a : b);
+  const k = Object.keys(file).reduce((a, b) => a > b ? a : b);
 
   const usage = await getUsage();
   if (usage.usedAmount !== file[k]) {
