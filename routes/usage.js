@@ -38,44 +38,50 @@ const getUsage = async () => {
     res.json({ error: "missing MobileNumber and Password" });
     return;
   }
-  puppeteer.use(StealthPlugin());
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-  let page = (await browser.pages())[0];
-  await page.goto("https://my.te.eg/");
+  let response = "0";
+  try {
 
-  await page.waitForSelector("#MobileNumberID");
-  await page.type("#MobileNumberID", MobileNumber, { delay: 100 });
+    puppeteer.use(StealthPlugin());
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    let page = (await browser.pages())[0];
+    await page.goto("https://my.te.eg/");
 
-  await page.waitForSelector("#PasswordID");
+    await page.waitForSelector("#MobileNumberID");
+    await page.type("#MobileNumberID", MobileNumber, { delay: 100 });
 
-  await page.type("#PasswordID", "p", { delay: 1000 });
-  await page.focus("#PasswordID");
-  await page.keyboard.down("Control");
-  await page.keyboard.press("A");
-  await page.keyboard.up("Control");
-  await page.keyboard.press("Backspace");
+    await page.waitForSelector("#PasswordID");
 
-  for (let i = 0; i < Password.length; i++) {
-    const element = Password[i];
-    await page.type("#PasswordID", element, { delay: 100 });
+    await page.type("#PasswordID", "p", { delay: 1000 });
+    await page.focus("#PasswordID");
+    await page.keyboard.down("Control");
+    await page.keyboard.press("A");
+    await page.keyboard.up("Control");
+    await page.keyboard.press("Backspace");
+
+    for (let i = 0; i < Password.length; i++) {
+      const element = Password[i];
+      await page.type("#PasswordID", element, { delay: 100 });
+    }
+
+    const singInBtn = await page.waitForSelector("#singInBtn");
+    await singInBtn.click();
+
+    const finalResponse = await page.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/line/freeunitusage") &&
+        response.request().method() === "POST",
+      11
+    );
+    const responseJson = await finalResponse.json();
+    response = responseJson?.body?.detailedLineUsageList[0];
+  } catch (e) {
+    console.log(e);
+  } finally {
+    await browser.close();
   }
-
-  const singInBtn = await page.waitForSelector("#singInBtn");
-  await singInBtn.click();
-
-  const finalResponse = await page.waitForResponse(
-    (response) =>
-      response.url().endsWith("/api/line/freeunitusage") &&
-      response.request().method() === "POST",
-    11
-  );
-  const responseJson = await finalResponse.json();
-
-  await browser.close();
-
-  return responseJson?.body?.detailedLineUsageList[0];
+  return response;
 }
 
 /* GET users listing. */
