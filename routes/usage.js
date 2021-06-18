@@ -16,37 +16,15 @@ let browser;
 })();
 
 require("dotenv").config();
-const fs = require('fs');
-var path = require('path');
 
 const MobileNumber = process.env.MobileNumber;
 const Password = process.env.Password;
 
-const fileName = path.join(__dirname, '../', 'public', 'data.json');
-setInterval(async () => {
-  const date = new Date();
-
-  let file = JSON.parse(fs.readFileSync(fileName, 'utf8'));
-
-  const k = Object.keys(file).reduce((a, b) => a > b ? a : b);
-
-  const usage = await getUsage();
-  if (usage.usedAmount !== file[k]) {
-    const key = parseInt(date.getTime() / (1 * 60 * 1000))
-    file[key] = usage.usedAmount;
-    fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
-      if (err) return console.log(err);
-      console.log(JSON.stringify(file));
-    });
-  }
-}, 1 * 60 * 1000)
-
 const getUsage = async () => {
   if (!MobileNumber || !Password) {
-    res.json({ error: "missing MobileNumber and Password" });
-    return;
+    return { error: "missing MobileNumber and Password" };
   }
-  let response = "0";
+  let response = { error: "not completed" };
   const page = await browser.newPage();
   try {
     await page.goto("https://my.te.eg/");
@@ -90,8 +68,8 @@ const getUsage = async () => {
 /* GET users listing. */
 router.get("/", async (req, res) => {
   const usage = await getUsage();
-
   res.json(usage);
+  usage.usedAmount ? console.log(usage.usedAmount) : console.log(usage)
 });
 
 module.exports = router;
