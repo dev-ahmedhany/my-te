@@ -8,6 +8,10 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 
+const browser = await puppeteer.launch({
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+});
+
 require("dotenv").config();
 const fs = require('fs');
 var path = require('path');
@@ -40,9 +44,6 @@ const getUsage = async () => {
     return;
   }
   let response = "0";
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
   const page = await browser.newPage();
   try {
     await page.goto("https://my.te.eg/");
@@ -78,8 +79,7 @@ const getUsage = async () => {
   } catch (e) {
     console.log(e);
   } finally {
-    await page.close()
-    await browser.close();
+    await page.close();
   }
   return response;
 }
