@@ -1,11 +1,12 @@
 var express = require("express");
 var router = express.Router();
+
 // puppeteer-extra is a drop-in replacement for puppeteer,
 // it augments the installed puppeteer with plugin functionality
 const puppeteer = require("puppeteer-extra");
-
 // add stealth plugin and use defaults (all evasion techniques)
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 
 require("dotenv").config();
 const fs = require('fs');
@@ -39,7 +40,6 @@ const getUsage = async () => {
     return;
   }
   let response = "0";
-  puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
