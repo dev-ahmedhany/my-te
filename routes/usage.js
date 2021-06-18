@@ -43,8 +43,8 @@ const getUsage = async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+  const page = await browser.newPage();
   try {
-    const page = (await browser.pages())[0];
     await page.goto("https://my.te.eg/");
 
     await page.waitForSelector("#MobileNumberID");
@@ -78,8 +78,7 @@ const getUsage = async () => {
   } catch (e) {
     console.log(e);
   } finally {
-    const pages = await browser.pages();
-    await Promise.all(pages.map((page) => page.close()));
+    await page.close()
     await browser.close();
   }
   return response;
