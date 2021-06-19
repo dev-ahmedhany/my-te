@@ -69,7 +69,6 @@ const getUsage = async () => {
 router.get("/", async (req, res) => {
   const usage = await getUsage();
   res.json(usage);
-  usage.usedAmount ? console.log(usage.usedAmount) : console.log(usage)
 });
 
 module.exports = router;
