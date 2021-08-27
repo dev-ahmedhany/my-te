@@ -11,6 +11,7 @@ puppeteer.use(StealthPlugin());
 let browser;
 (async () => {
   browser = await puppeteer.launch({
+    // "headless": false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 })();
@@ -31,9 +32,16 @@ const getUsage = async () => {
 
     const mobileNumberSelector = '#serviceNo > input'
     const passwordSelector = '#password'
-    const singInBtnSelector = 'body > app-root > div > div.p-mt-5.top-relative > app-login > div > div > div > p-card:nth-child(2) > div > div > div > form > div > button:nth-child(4)'
 
     await page.waitForSelector(mobileNumberSelector);
+
+    await page.type(mobileNumberSelector, "p", { delay: 1000 });
+    await page.focus(mobileNumberSelector);
+    await page.keyboard.down("Control");
+    await page.keyboard.press("A");
+    await page.keyboard.up("Control");
+    await page.keyboard.press("Backspace");
+
     await page.type(mobileNumberSelector, MobileNumber, { delay: 100 });
 
     await page.waitForSelector(passwordSelector);
