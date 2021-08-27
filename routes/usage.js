@@ -29,13 +29,16 @@ const getUsage = async () => {
   try {
     await page.goto("https://my.te.eg/");
 
-    await page.waitForSelector("#MobileNumberID");
-    await page.type("#MobileNumberID", MobileNumber, { delay: 100 });
+    const mobileNumberSelector = '#serviceNo > input'
+    const passwordSelector = '#password'
 
-    await page.waitForSelector("#PasswordID");
+    await page.waitForSelector(mobileNumberSelector);
+    await page.type(mobileNumberSelector, MobileNumber, { delay: 100 });
 
-    await page.type("#PasswordID", "p", { delay: 1000 });
-    await page.focus("#PasswordID");
+    await page.waitForSelector(passwordSelector);
+
+    await page.type(passwordSelector, "p", { delay: 1000 });
+    await page.focus(passwordSelector);
     await page.keyboard.down("Control");
     await page.keyboard.press("A");
     await page.keyboard.up("Control");
@@ -43,7 +46,7 @@ const getUsage = async () => {
 
     for (let i = 0; i < Password.length; i++) {
       const element = Password[i];
-      await page.type("#PasswordID", element, { delay: 100 });
+      await page.type(passwordSelector, element, { delay: 100 });
     }
 
     const singInBtn = await page.waitForSelector("#singInBtn");
