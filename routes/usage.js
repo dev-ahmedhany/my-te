@@ -11,7 +11,7 @@ puppeteer.use(StealthPlugin());
 let browser;
 (async () => {
   browser = await puppeteer.launch({
-    // "headless": false,
+    // headless: false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 })();
@@ -30,36 +30,42 @@ const getUsage = async () => {
   try {
     await page.goto("https://my.te.eg/");
 
-    const mobileNumberSelector = '#serviceNo > input'
-    const passwordSelector = '#password'
+    await page.waitForNavigation();
+    const title = await page.title();
 
-    await page.waitForSelector(mobileNumberSelector);
+    if (title === "Login") {
+      const mobileNumberSelector = "#serviceNo > input";
+      const passwordSelector = "#password";
 
-    await page.type(mobileNumberSelector, "p", { delay: 1000 });
-    await page.focus(mobileNumberSelector);
-    await page.keyboard.down("Control");
-    await page.keyboard.press("A");
-    await page.keyboard.up("Control");
-    await page.keyboard.press("Backspace");
+      await page.waitForSelector(mobileNumberSelector);
 
-    await page.type(mobileNumberSelector, MobileNumber, { delay: 100 });
+      await page.type(mobileNumberSelector, "p", { delay: 1000 });
+      await page.focus(mobileNumberSelector);
+      await page.keyboard.down("Control");
+      await page.keyboard.press("A");
+      await page.keyboard.up("Control");
+      await page.keyboard.press("Backspace");
 
-    await page.waitForSelector(passwordSelector);
+      await page.type(mobileNumberSelector, MobileNumber, { delay: 100 });
 
-    await page.type(passwordSelector, "p", { delay: 1000 });
-    await page.focus(passwordSelector);
-    await page.keyboard.down("Control");
-    await page.keyboard.press("A");
-    await page.keyboard.up("Control");
-    await page.keyboard.press("Backspace");
+      await page.waitForSelector(passwordSelector);
 
-    for (let i = 0; i < Password.length; i++) {
-      const element = Password[i];
-      await page.type(passwordSelector, element, { delay: 100 });
+      await page.type(passwordSelector, "p", { delay: 1000 });
+      await page.focus(passwordSelector);
+      await page.keyboard.down("Control");
+      await page.keyboard.press("A");
+      await page.keyboard.up("Control");
+      await page.keyboard.press("Backspace");
+
+      for (let i = 0; i < Password.length; i++) {
+        const element = Password[i];
+        await page.type(passwordSelector, element, { delay: 100 });
+      }
+
+      await page.type(passwordSelector, String.fromCharCode(13), {
+        delay: 100,
+      });
     }
-
-    await page.type(passwordSelector, String.fromCharCode(13), { delay: 100 });
-
     const finalResponse = await page.waitForResponse(
       (response) =>
         response.url().endsWith("/api/line/freeunitusage") &&
@@ -74,7 +80,7 @@ const getUsage = async () => {
     await page.close();
   }
   return response;
-}
+};
 
 /* GET users listing. */
 router.get("/", async (req, res) => {
