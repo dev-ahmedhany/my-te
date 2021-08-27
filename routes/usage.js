@@ -31,6 +31,7 @@ const getUsage = async () => {
 
     const mobileNumberSelector = '#serviceNo > input'
     const passwordSelector = '#password'
+    const singInBtnSelector = 'body > app-root > div > div.p-mt-5.top-relative > app-login > div > div > div > p-card:nth-child(2) > div > div > div > form > div > button:nth-child(4)'
 
     await page.waitForSelector(mobileNumberSelector);
     await page.type(mobileNumberSelector, MobileNumber, { delay: 100 });
@@ -49,8 +50,7 @@ const getUsage = async () => {
       await page.type(passwordSelector, element, { delay: 100 });
     }
 
-    const singInBtn = await page.waitForSelector("#singInBtn");
-    await singInBtn.click();
+    await page.type(passwordSelector, String.fromCharCode(13), { delay: 100 });
 
     const finalResponse = await page.waitForResponse(
       (response) =>
